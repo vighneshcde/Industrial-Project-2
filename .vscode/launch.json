@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "🛡️ Run RegTech AI Platform (Python Backend)",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/backend.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "📦 Initialize / Reset Database",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/db.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}

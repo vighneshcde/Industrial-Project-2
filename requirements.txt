@@ -1,0 +1,3 @@
+# RegTech AI - Python Dependencies
+# The backend runs natively with Python 3.8+ standard libraries (sqlite3, http.server, json, hashlib).
+# Zero external pip installs required!

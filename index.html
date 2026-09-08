@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Duewise AI - Your bills, taxes, and notices in one calm place</title>
+  <meta name="description" content="Duewise AI helps finance teams prepare bills, taxes, and notice responses ahead of deadlines." />
+  <link rel="stylesheet" href="./styles/main.css" />
+</head>
+<body>
+  <div id="app-root">
+    <!-- Sidebar Navigation -->
+    <aside class="app-sidebar">
+      <div class="sidebar-header">
+        <div class="brand-badge">🛡️</div>
+        <div class="brand-info">
+          <h1>Duewise AI</h1>
+          <p>Money, taxes & notices</p>
+        </div>
+      </div>
+
+      <!-- Entity Digital Twin Switcher -->
+      <div class="sidebar-entity-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <span style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Company Digital Twin</span>
+        </div>
+        <select id="sidebar-entity-select" class="entity-switch-select"></select>
+        <div id="sidebar-entity-tags" class="entity-meta-tags"></div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Your day</div>
+
+        <a class="nav-item active" data-tab="dashboard">
+          <span class="nav-icon">✨</span>
+          <span>Today</span>
+          <span class="nav-badge" style="background: var(--accent-glow); color: var(--accent-primary); border: 1px solid var(--info-border);">AI plan</span>
+        </a>
+
+        <div class="nav-section-title">⚡ Treasury & Auto-Pay</div>
+
+        <a class="nav-item active" data-tab="payments">
+          <span class="nav-icon">💸</span>
+          <span>Auto-Pay Center</span>
+          <span class="nav-badge" id="nav-badge-pay" style="background: var(--warning-surface); color: var(--warning-base); border: 1px solid var(--warning-border);">3 Pay Alerts</span>
+        </a>
+
+        <a class="nav-item" data-tab="treasury">
+          <span class="nav-icon">🏦</span>
+          <span>Treasury & Liquidity</span>
+          <span class="nav-badge" style="background: var(--success-surface); color: var(--success-base); border: 1px solid var(--success-border);">100% Safe</span>
+        </a>
+
+        <a class="nav-item" data-tab="notices">
+          <span class="nav-icon">🛡️</span>
+          <span>Tax Notice Defense</span>
+          <span class="nav-badge" style="background: var(--danger-surface); color: var(--danger-base); border: 1px solid var(--danger-border);">AI Legal</span>
+        </a>
+
+        <a class="nav-item" data-tab="inbox">
+          <span class="nav-icon">✉️</span>
+          <span>Notice Inbox</span>
+          <span class="nav-badge" id="nav-badge-inbox" style="background: var(--warning-surface); color: var(--warning-base); border: 1px solid var(--warning-border);">2 New</span>
+        </a>
+
+        <a class="nav-item" data-tab="reminders">
+          <span class="nav-icon">🔔</span>
+          <span>Reminders & delivery</span>
+          <span class="nav-badge" style="background: var(--success-surface); color: var(--success-base); border: 1px solid var(--success-border);">On time</span>
+        </a>
+
+        <a class="nav-item" data-tab="crafter">
+          <span class="nav-icon">⚙️</span>
+          <span>Custom Rule Crafter</span>
+        </a>
+
+        <div class="nav-section-title">Core Intelligence</div>
+        
+        <a class="nav-item" data-tab="risk">
+          <span class="nav-icon">📊</span>
+          <span>Risk Matrix & Score</span>
+          <span class="nav-badge" style="background: var(--success-surface); color: var(--success-base); border: 1px solid var(--success-border);">Live</span>
+        </a>
+
+        <a class="nav-item" data-tab="radar">
+          <span class="nav-icon">📡</span>
+          <span>Regulatory Radar</span>
+        </a>
+
+        <a class="nav-item" data-tab="calendar">
+          <span class="nav-icon">🗓️</span>
+          <span>Obligations & Workflows</span>
+        </a>
+
+        <a class="nav-item" data-tab="auditor">
+          <span class="nav-icon">🔍</span>
+          <span>Multimodal Doc Auditor</span>
+        </a>
+
+        <div class="nav-section-title">Entity & Ontology</div>
+
+        <a class="nav-item" data-tab="profiler">
+          <span class="nav-icon">🏢</span>
+          <span>Entity Profiler</span>
+        </a>
+
+        <a class="nav-item" data-tab="kg">
+          <span class="nav-icon">🕸️</span>
+          <span>Knowledge Graph</span>
+        </a>
+
+        <a class="nav-item" data-tab="copilot">
+          <span class="nav-icon">🤖</span>
+          <span>Duewise Copilot</span>
+        </a>
+      </nav>
+
+      <!-- Sidebar Footer -->
+      <div class="sidebar-footer">
+        <div style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-muted);">
+          <div class="pulse-dot"></div>
+          <span>Autonomous Agents: 9/9 Active</span>
+        </div>
+        <button id="btn-theme-toggle" class="btn-icon" title="Toggle Dark/Light Theme">
+          🌙
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Application View -->
+    <main class="app-main">
+      <!-- Top Navigation Header -->
+      <header class="top-nav">
+        <div class="module-title-wrap">
+          <h2 id="top-nav-title">✨ Your money day, made simple</h2>
+          <p id="top-nav-sub">A clear plan for bills, taxes, and notices—before they become urgent.</p>
+        </div>
+
+        <div class="top-nav-right">
+          <!-- Global Search -->
+          <div class="search-command-bar">
+            <span>🔍</span>
+            <input type="text" id="global-search-input" placeholder="Search laws, returns, treasury, notices..." />
+            <span class="search-kbd">Ctrl+K</span>
+          </div>
+
+          <!-- Dynamic Health Pill -->
+          <div class="health-pill-widget">
+            <span class="health-pill-label">Health</span>
+            <span class="health-pill-score" id="header-health-score" style="color: var(--success-base);">--</span>
+          </div>
+
+          <!-- User Authentication Header Widget -->
+          <div id="header-auth-widget"></div>
+
+          <!-- Notification Bell -->
+          <button id="btn-notif-tray" class="btn-icon" title="Active Payment Requests">
+            🔔
+            <span style="position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; border-radius: 50%; background: var(--warning-base);"></span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Viewports -->
+      <div id="view-dashboard" class="module-viewport active"></div>
+      <div id="view-payments" class="module-viewport active"></div>
+      <div id="view-treasury" class="module-viewport"></div>
+      <div id="view-notices" class="module-viewport"></div>
+      <div id="view-inbox" class="module-viewport"></div>
+      <div id="view-reminders" class="module-viewport"></div>
+      <div id="view-crafter" class="module-viewport"></div>
+      <div id="view-risk" class="module-viewport"></div>
+      <div id="view-radar" class="module-viewport"></div>
+      <div id="view-calendar" class="module-viewport"></div>
+      <div id="view-auditor" class="module-viewport"></div>
+      <div id="view-profiler" class="module-viewport"></div>
+      <div id="view-kg" class="module-viewport"></div>
+      <div id="view-copilot" class="module-viewport"></div>
+    </main>
+  </div>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>

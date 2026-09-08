@@ -1,0 +1,22 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start Autonomous Compliance Server",
+      "type": "shell",
+      "command": "python backend.py",
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Reset and Seed SQLite Database",
+      "type": "shell",
+      "command": "python db.py",
+      "problemMatcher": []
+    }
+  ]
+}
