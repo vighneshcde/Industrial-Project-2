@@ -25,7 +25,8 @@ from datetime import datetime
 import db
 
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
-CANDIDATE_PORTS = [8000, 8080, 8001, 8002, 5000]
+DEFAULT_PORT = int(os.environ.get("PORT", "8000"))
+CANDIDATE_PORTS = [DEFAULT_PORT, 8000, 8080, 8001, 8002, 5000]
 
 def open_in_chrome(url):
     """Attempt to launch Google Chrome on Windows by default, falling back to default browser."""
@@ -428,10 +429,13 @@ def run_server():
     print("User Registration & Authentication: Ready")
     print("Multi-Threaded Server Engine: Active")
     print(f"Web Dashboard running at: {url}")
-    print("Opening Google Chrome by default...")
-    print("=" * 70)
 
-    open_in_chrome(url)
+    if os.environ.get("PORT"):
+        print("Deployment mode detected: skipping browser launch.")
+    else:
+        print("Opening Google Chrome by default...")
+        open_in_chrome(url)
+    print("=" * 70)
 
     try:
         httpd.serve_forever()
