@@ -182,7 +182,7 @@ class ComplianceAPIHandler(http.server.SimpleHTTPRequestHandler):
                 rows = [dict(row) for row in cursor.fetchall()]
                 self.send_json(200, rows)
 
-            elif path == '/api/payments':
+            elif path in ['/api/payments', '/api/payments/requests']:
                 entity_id = query_params.get('entity_id', ['ENT-IN-001'])[0]
                 cursor.execute("SELECT * FROM payment_requests WHERE entity_id = ? ORDER BY created_at DESC", (entity_id,))
                 rows = [dict(row) for row in cursor.fetchall()]
@@ -405,17 +405,21 @@ class ThreadedHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
 def run_server():
     db.init_database()
     os.chdir(PROJECT_DIR)
-    
+
+    deployment_mode = bool(os.environ.get("PORT"))
+    bind_host = "0.0.0.0" if deployment_mode else ""
+    ports = [DEFAULT_PORT] if deployment_mode else CANDIDATE_PORTS
     httpd = None
     active_port = None
 
-    for port in CANDIDATE_PORTS:
+    for port in ports:
         try:
-            httpd = ThreadedHTTPServer(("", port), ComplianceAPIHandler)
+            httpd = ThreadedHTTPServer((bind_host, port), ComplianceAPIHandler)
             active_port = port
             break
         except OSError:
-            continue
+            if deployment_mode:
+                raise
 
     if not httpd:
         print("[ERROR] Could not bind to any available ports.")
@@ -430,7 +434,7 @@ def run_server():
     print("Multi-Threaded Server Engine: Active")
     print(f"Web Dashboard running at: {url}")
 
-    if os.environ.get("PORT"):
+    if deployment_mode:
         print("Deployment mode detected: skipping browser launch.")
     else:
         print("Opening Google Chrome by default...")

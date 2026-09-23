@@ -25,6 +25,9 @@ export class PaymentEngine {
     if (window.aegisFlowApp && window.aegisFlowApp.modules.dashboard) {
       window.aegisFlowApp.modules.dashboard.render();
     }
+    if (window.aegisFlowApp && window.aegisFlowApp.modules.reminders) {
+      window.aegisFlowApp.modules.reminders.render();
+    }
   }
 
   fallbackLocalPayments() {

@@ -26,10 +26,12 @@
 ## 🚀 How to Run Locally (Windows)
 
 ### Option 1: 1-Click Batch File (Fastest)
+
 In this folder, double-click:
 👉 [**`start.bat`**](file:///c:/Users/user/OneDrive/Desktop/EDI%20PROJECT/start.bat)
 
 ### Option 2: Inside VS Code Terminal
+
 1. Open VS Code and open your terminal (**`Ctrl + \``**).
 2. Run:
    ```powershell
@@ -38,3 +40,15 @@ In this folder, double-click:
 3. Open **`http://localhost:8000`** in your browser.
 
 Node.js is the only runtime required for the local demo. The dashboard safely runs in demo mode: email scans and payment receipts are simulated until production Gmail OAuth and banking integrations are configured.
+
+## Deploy on Vercel
+
+The Vercel deployment hosts the dashboard as a static demo. The frontend already includes mock data and local fallbacks, so it works without a backend.
+
+1. Push this project to GitHub.
+2. Open [vercel.com/new](https://vercel.com/new) and import the repository.
+3. Keep the default framework preset as **Other**.
+4. Leave the build command empty and set the output directory to `.`.
+5. Click **Deploy**.
+
+For the real Python API, deploy the existing `render.yaml` service separately and connect the frontend to that API. Vercel does not run `backend.py` as a persistent web server, and SQLite storage is not durable in serverless deployments.

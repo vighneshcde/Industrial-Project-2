@@ -20,6 +20,7 @@ import { CursorEffectsManager } from './modules/cursorEffects.js';
 
 class AegisFlowApp {
   constructor() {
+    window.aegisFlowApp = this;
     this.state = {
       currentEntity: { ...MOCK_ENTITIES[0] },
       obligations: JSON.parse(JSON.stringify(INITIAL_OBLIGATIONS)),
