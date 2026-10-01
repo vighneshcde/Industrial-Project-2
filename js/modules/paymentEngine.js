@@ -122,7 +122,7 @@ export class PaymentEngine {
   render() {
     const pending = this.paymentRequests.filter(r => r.status === 'AWAITING_USER_APPROVAL');
     const executed = this.paymentRequests.filter(r => r.status === 'APPROVED_AND_PAID');
-    const user = this.appState.currentUser || { full_name: "Vighnesh Kamale", role: "admin", email: "vighnesh@tcs.com" };
+    const user = this.appState.currentUser || { full_name: "Vighnesh Kamale", role: "admin", email: "vighneshcde@gmail.com" };
 
     const totalPendingAmount = pending.reduce((sum, r) => sum + (parseFloat(r.amount) || 0), 0);
     const selected = pending.filter(r => this.selectedPaymentIds.has(r.id));
@@ -297,7 +297,7 @@ export class PaymentEngine {
                   <td style="padding: 12px; font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">${item.digital_signature_hash || 'SIG-SHA256-4F8A'}</td>
                   <td style="padding: 12px;">
                     <span class="email-dispatch-badge">
-                      <span>✓</span> Dispatched to ${this.appState.currentUser ? this.appState.currentUser.email : 'vighnesh@tcs.com'}
+                      <span>✓</span> Dispatched to ${this.appState.currentUser ? this.appState.currentUser.email : 'vighneshcde@gmail.com'}
                     </span>
                   </td>
                   <td style="padding: 12px; text-align: right;">
@@ -386,7 +386,7 @@ export class PaymentEngine {
     const req = this.paymentRequests.find(r => r.id === payId);
     if (!req) return;
 
-    const recipientEmail = this.appState.currentUser ? this.appState.currentUser.email : 'vighnesh@tcs.com';
+    const recipientEmail = this.appState.currentUser ? this.appState.currentUser.email : 'vighneshcde@gmail.com';
     const confirmed = confirm(`Review payment before approval:\n\n${req.title}\nAmount: ₹${Number(req.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}\nPayee: ${req.beneficiary_authority}\nDue: ${req.due_date}\nReceipt will be emailed to: ${recipientEmail}\n\nAuthorize this payment?`);
     if (!confirmed) return;
 
@@ -432,11 +432,16 @@ export class PaymentEngine {
     const content = this.container.querySelector('#email-receipt-card-content');
     if (!modal || !content) return;
 
-    const user = this.appState.currentUser || { full_name: "Vighnesh Kamale", email: "vighnesh@tcs.com" };
-    const defaultEmail = user.email || "vighnesh@tcs.com";
+    const user = this.appState.currentUser || { full_name: "Vighnesh Kamale", email: "vighneshcde@gmail.com" };
+    const defaultEmail = user.email || "vighneshcde@gmail.com";
     const txnRef = req.transaction_reference || `BANK-TXN-HDFC-${Date.now().toString().slice(-6)}`;
     const sigHash = req.digital_signature_hash || `SIG-SHA256-${Date.now().toString(16).toUpperCase()}`;
     const paidAt = req.paid_at || new Date().toISOString().replace('T', ' ').slice(0, 19);
+
+    const isRealSent = emailReceipt && emailReceipt.smtp_real_sent;
+    const smtpStatusText = isRealSent
+      ? `<span style="color: var(--success-base); font-weight: 700;">✓ Live email delivered to your inbox (${defaultEmail})!</span>`
+      : `<span style="color: var(--warning-base);">ℹ️ Demo / Sandbox Mode: Generated & saved locally.</span>`;
 
     content.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-default); padding-bottom: 14px;">
@@ -446,13 +451,20 @@ export class PaymentEngine {
           </div>
           <div>
             <h3 style="font-size: 17px; font-weight: 800; color: var(--text-primary); margin: 0;">Statutory Payment Email Dispatched!</h3>
-            <p style="font-size: 12px; color: var(--success-base); margin: 2px 0 0 0; font-weight: 600;">
-              ✓ Remittance advice sent to <strong>${defaultEmail}</strong>
+            <p style="font-size: 12px; margin: 2px 0 0 0;">
+              ${smtpStatusText}
             </p>
           </div>
         </div>
         <button class="modal-close-btn" id="btn-close-email-modal" style="font-size: 24px; color: var(--text-muted); background: none; border: none; cursor: pointer;">&times;</button>
       </div>
+
+      ${!isRealSent ? `
+        <div style="background: rgba(245, 158, 11, 0.1); border: 1px dashed var(--warning-base); border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; font-size: 12px; color: var(--warning-base); line-height: 1.4;">
+          <strong>💡 Want real emails delivered to your actual Gmail inbox?</strong><br>
+          Open <code>email_config.json</code> in the project folder and enter your Gmail address and 16-character Google App Password.
+        </div>
+      ` : ''}
 
       <!-- Live Email HTML Preview Card -->
       <div style="background: #020617; border: 1px solid var(--border-default); border-radius: 12px; padding: 20px; margin-bottom: 20px; font-size: 13px;">
@@ -461,7 +473,7 @@ export class PaymentEngine {
             <div style="font-weight: 800; font-size: 15px; color: var(--accent-primary);">🛡️ Autonomous Compliance OS</div>
             <div style="font-size: 11px; color: var(--text-muted);">Official Tax & Treasury Remittance Advice</div>
           </div>
-          <span class="badge-status pass" style="font-size: 10px;">PAID (T-2 EARLY)</span>
+          <span class="badge-status pass" style="font-size: 10px;">${isRealSent ? '✓ SENT VIA SMTP' : 'PAID (T-2 EARLY)'}</span>
         </div>
 
         <div style="margin-bottom: 14px; color: var(--text-secondary); line-height: 1.5;">
@@ -568,7 +580,7 @@ export class PaymentEngine {
     const selected = this.paymentRequests.filter(r => r.status === 'AWAITING_USER_APPROVAL' && this.selectedPaymentIds.has(r.id));
     if (!selected.length) return;
     const total = selected.reduce((sum, r) => sum + Number(r.amount || 0), 0);
-    const recipientEmail = this.appState.currentUser ? this.appState.currentUser.email : 'vighnesh@tcs.com';
+    const recipientEmail = this.appState.currentUser ? this.appState.currentUser.email : 'vighneshcde@gmail.com';
     const okay = confirm(`You are about to approve ${selected.length} payment(s) totalling ₹${total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}.\n\nReceipts will be automatically dispatched to ${recipientEmail}.\n\nContinue?`);
     if (!okay) return;
     for (const req of selected) await this.executePayment(req.id);

@@ -21,6 +21,9 @@ import time
 import subprocess
 import webbrowser
 import sqlite3
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 import db
 
@@ -51,6 +54,62 @@ def open_in_chrome(url):
     except Exception:
         pass
     return False
+
+def get_smtp_config():
+    """Retrieve SMTP configuration from email_config.json or environment variables."""
+    config_path = os.path.join(PROJECT_DIR, "email_config.json")
+    cfg = {
+        "smtp_server": os.environ.get("SMTP_SERVER", "smtp.gmail.com"),
+        "smtp_port": int(os.environ.get("SMTP_PORT", "587")),
+        "smtp_user": os.environ.get("SMTP_USER", ""),
+        "smtp_password": os.environ.get("SMTP_PASSWORD", ""),
+        "configured": False
+    }
+    if os.path.exists(config_path):
+        try:
+            with open(config_path, "r", encoding="utf-8") as f:
+                loaded = json.load(f)
+                cfg.update(loaded)
+        except Exception:
+            pass
+    cfg["configured"] = bool(cfg.get("smtp_user") and cfg.get("smtp_password") and "your_email" not in cfg.get("smtp_user"))
+    return cfg
+
+def send_real_smtp_email(to_email, subject, html_content):
+    """
+    Sends a real email over SMTP (e.g. Gmail App Password, Outlook, etc.).
+    Returns (success_bool, message_str).
+    """
+    cfg = get_smtp_config()
+    if not cfg.get("configured"):
+        msg = "SMTP not configured in email_config.json (running in simulated sandbox mode)."
+        print(f"[NOTE] {msg}")
+        return False, msg
+
+    try:
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = subject
+        msg['From'] = f"Autonomous Compliance Platform <{cfg['smtp_user']}>"
+        msg['To'] = to_email
+        msg.attach(MIMEText(html_content, 'html'))
+
+        port = int(cfg.get("smtp_port", 587))
+        server_host = cfg.get("smtp_server", "smtp.gmail.com")
+
+        if port == 465:
+            server = smtplib.SMTP_SSL(server_host, port, timeout=12)
+        else:
+            server = smtplib.SMTP(server_host, port, timeout=12)
+            server.starttls()
+
+        server.login(cfg["smtp_user"], cfg["smtp_password"])
+        server.sendmail(cfg["smtp_user"], to_email, msg.as_string())
+        server.quit()
+        print(f"[SUCCESS] Real email successfully sent to {to_email}!")
+        return True, f"Real email delivered to {to_email} via {server_host}"
+    except Exception as e:
+        print(f"[ERROR] Failed to send real SMTP email to {to_email}: {e}")
+        return False, str(e)
 
 def generate_and_dispatch_email_receipt(recipient_email, req_dict, txn_ref, sig_hash, now_str, user_name="Vighnesh Kamale"):
     """
@@ -92,12 +151,18 @@ def generate_and_dispatch_email_receipt(recipient_email, req_dict, txn_ref, sig_
       </p>
     </div>
     """
+
+    # Attempt real SMTP delivery
+    is_sent_real, smtp_msg = send_real_smtp_email(recipient_email, subject, html_content)
+
     return {
         "recipient": recipient_email,
         "subject": subject,
         "html_content": html_content,
         "dispatched_at": now_str,
-        "status": "DELIVERED"
+        "status": "DELIVERED_REAL" if is_sent_real else "SIMULATED_LOCAL",
+        "smtp_real_sent": is_sent_real,
+        "smtp_message": smtp_msg
     }
 
 class ComplianceAPIHandler(http.server.SimpleHTTPRequestHandler):
@@ -300,7 +365,7 @@ class ComplianceAPIHandler(http.server.SimpleHTTPRequestHandler):
                 cursor.execute("SELECT full_name, email FROM users WHERE id = ?", (user_id,))
                 u_row = cursor.fetchone()
                 user_name = u_row['full_name'] if u_row else "Vighnesh Kamale"
-                recipient_email = custom_recipient or (u_row['email'] if u_row else "vighnesh@tcs.com")
+                recipient_email = custom_recipient or (u_row['email'] if u_row else "vighneshcde@gmail.com")
 
                 # Update payment request status
                 cursor.execute("""
@@ -339,7 +404,7 @@ class ComplianceAPIHandler(http.server.SimpleHTTPRequestHandler):
             # 3B. Forward / Resend Payment Email Receipt
             elif path == '/api/payments/send-email':
                 pay_id = body.get('payment_id')
-                recipient_email = body.get('recipient_email', 'vighnesh@tcs.com').strip()
+                recipient_email = body.get('recipient_email', 'vighneshcde@gmail.com').strip()
                 user_id = body.get('user_id', 'USR-001')
 
                 if not pay_id:

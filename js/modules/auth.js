@@ -22,7 +22,7 @@ export class AuthManager {
           return {
             ...user,
             username: 'vighnesh',
-            email: 'vighnesh@tcs.com',
+            email: 'vighneshcde@gmail.com',
             full_name: 'Vighnesh Kamale',
             organization: user.organization || 'Tata Consultancy Services (TCS)'
           };
@@ -36,7 +36,7 @@ export class AuthManager {
     return {
       id: "USR-001",
       username: "vighnesh",
-      email: "vighnesh@tcs.com",
+      email: "vighneshcde@gmail.com",
       full_name: "Vighnesh Kamale",
       role: "admin",
       organization: "Tata Consultancy Services (TCS)",

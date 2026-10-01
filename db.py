@@ -130,7 +130,7 @@ def init_database():
 
     # Seed Default Indian Enterprise Users
     default_users = [
-        ("USR-001", "vighnesh", "vighnesh@tcs.com", hash_password("admin123"), "Vighnesh Kamale", "admin", "Tata Consultancy Services (TCS)", "👔"),
+        ("USR-001", "vighnesh", "vighneshcde@gmail.com", hash_password("admin123"), "Vighnesh Kamale", "admin", "Tata Consultancy Services (TCS)", "👔"),
         ("USR-002", "tax_lead", "priya.sharma@tcs.com", hash_password("tax123"), "Priya Sharma", "finance", "Tata Consultancy Services (TCS)", "💼"),
         ("USR-003", "legal_counsel", "sunita.k@tcs.com", hash_password("legal123"), "Adv. Sunita Kulkarni", "legal", "Tata Consultancy Services (TCS)", "⚖️"),
         ("USR-004", "statutory_auditor", "auditor@deloitte.com", hash_password("audit123"), "Karthik Menon (CPA)", "auditor", "Deloitte Touche LLP", "🔍")
